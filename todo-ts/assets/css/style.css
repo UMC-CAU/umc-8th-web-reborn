@@ -1,0 +1,200 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    flex-direction: column;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 10px 20px;
+    color: #fff;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-menu li {
+    display: inline;
+}
+
+.nav-menu a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.menu-icon {
+    font-size: 24px;
+    cursor: pointer;
+    display: none;
+}
+
+/* 🟢 모바일 대응 (화면 너비 480px 이하) */
+@media (max-width: 480px) {
+    .render-container {
+        flex-direction: column; /* 세로 방향으로 변경 */
+        gap: 10px;
+    }
+
+    .render-container__section {
+        max-width: 100%; /* 화면 너비에 맞게 확장 */
+    }
+}
+
+/* 🟢 태블릿 및 모바일 공통 대응 (화면 너비 768px 이하) */
+@media (max-width: 768px) {
+    .todo-container {
+        max-width: 90%; /* 화면 크기에 맞게 유동적 확장 */
+    }
+
+    .nav-menu {
+        display: none; /* 네비게이션 메뉴 숨김 */
+    }
+
+    .menu-icon {
+        display: block; /* 햄버거 메뉴 아이콘 표시 */
+        cursor: pointer;
+        font-size: 24px;
+        text-align: center;
+    }
+}
+
+/* 🟢 전체 화면을 감싸는 컨테이너 */
+.todo-container {
+    max-width: 600px; /* 최대 너비 설정 */
+    width: 90%; /* 유동적인 너비 설정 */
+    margin: 50px auto; /* 상하 50px, 좌우 자동 (가운데 정렬) */
+    background-color: #fff; /* 배경색 추가 */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+    box-sizing: border-box; /* 패딩이 너비에 포함되도록 설정 */
+}
+
+.todo-container__header {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.todo-container__form {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.todo-container__input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+    flex: 1;
+}
+
+.todo-container__button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+}
+
+.todo-container__button:hover {
+    background-color: #218838;
+}
+
+/* 🟢 할 일 / 완료 리스트 레이아웃 */
+.render-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* 🟢 개별 리스트 스타일 (반응형 대비) */
+.render-container__section {
+    flex: 1; /* 동일한 너비로 설정 */
+    min-width: 200px; /* 최소 너비 설정 */
+    max-width: 300px; /* 최대 너비 설정 */
+}
+
+.render-container__title {
+    font-size: 18px;
+    margin-bottom: 10px;
+
+    display: flex;
+    justify-content: center;
+}
+
+.render-container__list {
+    list-style: none;
+    padding: 0;
+}
+
+/* 🟢 리스트 내부 아이템 스타일 */
+.render-container__item {
+    display: flex;
+    align-items: center;      /* 세로 정렬 */
+    justify-content: space-between;
+    width: 100%;
+    min-height: 40px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-sizing: border-box;   /* 패딩이 너비에 포함되도록 설정 */
+    overflow: hidden;         /* 요소가 넘칠 경우 숨김 처리 */
+}
+
+.render-container__item-text {
+    flex: 1;
+    white-space: normal;       /* 여러 줄 표시 */
+    word-wrap: break-word;     /* 단어 단위 줄바꿈 */
+    word-break: break-all;     /* 긴 연속 문자열 강제 줄바꿈 */
+    overflow-wrap: break-word; /* 추가 안전 처리 */
+    margin-right: 10px;
+}
+
+.render-container__item-button {
+    flex-shrink: 0;            /* 버튼 크기 고정 */
+    width: 60px;               /* 고정 너비 */
+    text-align: center;
+    border: none;
+    background-color: #dc3545;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.render-container__item-button:hover {
+    background-color: #c82333;
+}
