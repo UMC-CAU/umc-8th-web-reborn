@@ -3,79 +3,68 @@ const todoInput = document.getElementById('todo-input');
 const todoForm = document.getElementById('todo-form');
 const todoList = document.getElementById('todo-list');
 const doneList = document.getElementById('done-list');
-if (!todoInput || !todoForm || !todoList || !doneList) {
-    console.error('필수 HTML 요소가 없습니다.');
-    throw new Error('필수 HTML 요소가 없습니다.');
-}
 let todos = [];
 let doneTasks = [];
-const renderTask = () => {
-    if (!todoList || !doneList)
-        return;
-    console.log('현재 할 일 목록:', todos);
-    console.log('현재 완료된 목록:', doneTasks);
-    const todoFragment = document.createDocumentFragment();
-    const doneFragment = document.createDocumentFragment();
-    todos.forEach((todo) => {
-        todoFragment.appendChild(createTodoElement(todo, false));
-    });
-    doneTasks.forEach((todo) => {
-        doneFragment.appendChild(createTodoElement(todo, true));
-    });
-    todoList.innerHTML = '';
-    doneList.innerHTML = '';
-    todoList.appendChild(todoFragment);
-    doneList.appendChild(doneFragment);
-};
 const getTodoText = () => {
     return todoInput.value.trim();
 };
 const addTodo = (text) => {
-    console.log(`추가된 할 일: ${text}`);
-    todos.push({ id: Date.now(), text, done: false });
-    if (todoInput)
-        todoInput.value = '';
-    renderTask();
+    todos.push({ id: Date.now(), text });
+    console.log(todos);
+    todoInput.value = '';
+    renderTasks();
 };
-const completeTask = (todo) => {
-    todos = todos.filter((t) => t.id !== todo.id);
-    doneTasks.push(Object.assign(Object.assign({}, todo), { done: true }));
-    renderTask();
+const completeTask = (task) => {
+    todos = todos.filter((t) => t.id !== task.id);
+    doneTasks.push(task);
+    renderTasks();
 };
-const deleteTask = (todo) => {
-    doneTasks = doneTasks.filter((t) => t.id !== todo.id);
-    renderTask();
+const deleteTask = (task) => {
+    doneTasks = doneTasks.filter((t) => t.id !== task.id);
+    renderTasks();
 };
-const createTodoElement = (todo, isDone) => {
+const createTaskElement = (task, isDone) => {
     const li = document.createElement('li');
     li.classList.add('render-container__item');
-    li.textContent = todo.text;
+    li.textContent = task.text;
     const button = document.createElement('button');
     button.classList.add('render-container__item-button');
     if (isDone) {
         button.textContent = '삭제';
-        button.style.backgroundColor = 'red';
+        button.style.backgroundColor = '#dc3545';
     }
     else {
         button.textContent = '완료';
-        button.style.backgroundColor = 'green';
+        button.style.backgroundColor = '#28a745';
     }
     button.addEventListener('click', () => {
         if (isDone) {
-            deleteTask(todo);
+            deleteTask(task);
         }
         else {
-            completeTask(todo);
+            completeTask(task);
         }
     });
     li.appendChild(button);
     return li;
 };
+const renderTasks = () => {
+    todoList.innerHTML = '';
+    doneList.innerHTML = '';
+    todos.forEach((task) => {
+        const li = createTaskElement(task, false);
+        todoList.appendChild(li);
+    });
+    doneTasks.forEach((task) => {
+        const li = createTaskElement(task, true);
+        doneList.appendChild(li);
+    });
+};
 todoForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const text = getTodoText();
-    if (text.trim()) {
+    if (text) {
         addTodo(text);
     }
 });
-renderTask();
+renderTasks();
