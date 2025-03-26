@@ -1,4 +1,6 @@
 import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import Navbar from './components/Navbar';
 import TodoContainer from './components/TodoContainer';
 
@@ -7,10 +9,19 @@ import TodoContainer from './components/TodoContainer';
 
 function App() {
   return (
-    <>
+    <Router>
       <Navbar />
+      <Routes>
+        <Route path="/" element={<h1>Home Page</h1>} />
+        <Route path="/week0" element={<h1>Week 0 Page</h1>} />
+        <Route path="/week1" element={<h1>Week 1 Page</h1>} />
+        <Route path="/week2" element={<h1>Week 2 Page</h1>} />
+        <Route path="/week3" element={<h1>Week 3 Page</h1>} />
+        <Route path="/week4" element={<h1>Week 4 Page</h1>} />
+        <Route path="/week5" element={<h1>Week 5 Page</h1>} />
+      </Routes>
       <TodoContainer />
-    </>
+    </Router>
   );
   // const nickname = '리본'
   // const sweetPotato = '고구마'
