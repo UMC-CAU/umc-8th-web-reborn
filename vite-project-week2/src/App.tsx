@@ -10,7 +10,7 @@ import TodoContainer from './components/TodoContainer';
 function App() {
   return (
     <Router>
-      <Navbar />
+      <Navbar/>
       <Routes>
         <Route path="/" element={<h1>Home Page</h1>} />
         <Route path="/week0" element={<h1>Week 0 Page</h1>} />
