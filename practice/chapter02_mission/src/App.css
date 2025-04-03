@@ -106,11 +106,10 @@ nav {
 
 .render-container__item-text {
   flex: 1;
-
-  white-space: nowrap; /* Prevent text from wrapping */
-  overflow: hidden; /* Hide any overflow */
-  text-overflow: ellipsis; /* Add '...' when text overflows */
-  display: block; /* Ensure it's treated as a block for the overflow to work */
+  word-wrap: break-word; /* 긴 단어를 여러 줄로 나누어 표시 */
+  white-space: normal; /* 텍스트가 자동으로 줄바꿈 되도록 설정 */
+  overflow: visible; /* 내용이 넘치더라도 모두 표시 */
+  display: block;
 }
 
 .render-container__item-button {
