@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import TodoForm from './TodoForm';
+import TodoForm from './TodoForm.tsx';
 import TodoList from './TodoList.tsx';
-import { useTodo } from '../../context/TodoContext';
-import { useTheme } from '../../context/ThemeProvider';
-import { THEME } from '../../context/themeConstants';
+import { useTodo } from '../../context/TodoContext.tsx';
+import { useTheme } from '../../context/ThemeProvider.tsx';
+import { THEME } from '../../context/themeConstants.ts';
 import clsx from 'clsx';
 
 const Todo = (): React.ReactElement => {

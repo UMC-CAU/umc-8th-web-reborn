@@ -10,7 +10,7 @@ export default function MoviePage() : React.ReactElement {
     useEffect(() : void => {    
         const fetchMovies = async () : Promise<void> => {
             const { data } = await axios.get<MovieResponse>(
-                `${import.meta.env.VITE_TMDB_BASE_URL}/movie/popular?language=ko-KR`,
+                `${import.meta.env.VITE_TMDB_BASE_URL}/movie/popular`,
                 {
                     headers: {
                         'Authorization': `Bearer ${import.meta.env.VITE_TMDB_KEY}`
