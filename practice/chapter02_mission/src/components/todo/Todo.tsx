@@ -9,7 +9,7 @@ import clsx from 'clsx';
 const Todo = (): React.ReactElement => {
     const [input, setInput] = useState<string>("");
     const { todos, doneTodos, addTodo, completeTodo, deleteTodo } = useTodo();
-    const { theme } = useTheme();
+    const { theme, toggleTheme } = useTheme();
     const isLightMode = theme === THEME.LIGHT;
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
@@ -24,10 +24,24 @@ const Todo = (): React.ReactElement => {
 
     return (
         <div className={clsx("todo-container w-[1600px] mx-auto p-6", {
-            "bg-white text-black": isLightMode,
+            "bg-black text-black": isLightMode,
             "bg-gray-800 text-white": !isLightMode
         })}>
-            <h1 className="todo-container__header">Duck Todo</h1>
+            <div className="todo-container__dark-mode-toggle flex justify-between items-center mb-4">
+                <button 
+                    onClick={toggleTheme}
+                    className={clsx("px-4 py-2 rounded-md transition-all", {
+                        "bg-black text-white": isLightMode,
+                        "bg-white text-black": !isLightMode
+                    })}
+                >
+                    {isLightMode ? "🌙" : "☀️"}
+                </button>
+                <h1 className="todo-container__header">Duck Todo🎀</h1>
+                <button className="todo-container__theme-button">
+                    {isLightMode ? "🌙" : "☀️"}
+                </button>
+            </div>
             <TodoForm 
                 input={input}
                 setInput={setInput}
