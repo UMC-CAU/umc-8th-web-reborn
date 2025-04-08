@@ -1,15 +1,49 @@
 import './App.css';
 import MoviePage from './pages/MoviePage';
+import NotFoundPage from './pages/NotFoundPage';
+import HomePage from './pages/HomePage';
+import Navbar from './components/Navbar';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import MovieDetailPage from './pages/MovieDetailPage';
 
-function App() : React.ReactElement {
-  console.log(import.meta.env.VITE_TMDB_KEY);
+const Layout = () : React.ReactElement => {
   return (
     <>
-      <h1 className="text-2xl text-amber-600">
-        Hello World
-      </h1>
-      <MoviePage />
+      <Navbar />
+      <Outlet />
     </>
+  );
+};
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Layout />,
+    errorElement: <NotFoundPage />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: 'movie/:category',
+        element: <MoviePage />,
+      },
+      {
+        path: 'movie/:category/:movieId',
+        element: <MovieDetailPage />,
+      },
+    ],
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
+  },
+]);
+
+function App() : React.ReactElement {
+  return (
+    <RouterProvider router={router} />
   );
 }
 
