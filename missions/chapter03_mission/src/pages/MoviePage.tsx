@@ -1,54 +1,30 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { Movie, MovieResponse } from "../types/movie";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import MovieCard from "../components/MovieCard";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { useParams } from "react-router-dom";
+import Pagination from "../components/Pagination";
+import { useMovies } from "../hooks/useMovies";
+
+const CATEGORY_TITLES = {
+    popular: '인기 영화',
+    now_playing: '상영 중인 영화',
+    top_rated: '평점 높은 영화',
+    upcoming: '개봉 예정 영화'
+} as const;
 
 export default function MoviePage() : React.ReactElement {
-    const [movies, setMovies] = useState<Movie[]>([]);
-
-    // 로딩 상태 관리
-    const [isPending, setIsPending] = useState(false);
-
-    // 에러 상태 관리
-    const [isError, setIsError] = useState(false);
-
-    // 페이지 번호 관리
     const [page, setPage] = useState(1);
-
-    // 카테고리 파라미터 가져오기 -> 구조분해할당 사용
     const { category } = useParams<{ category: string }>();
-
-    // 영화 데이터 가져오기
-    useEffect(() : void => {    
-        const fetchMovies = async () : Promise<void> => {
-            setIsPending(true);
-            try {
-                const { data } = await axios.get<MovieResponse>(
-                    `${import.meta.env.VITE_TMDB_BASE_URL}/movie/${category}?page=${page}`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${import.meta.env.VITE_TMDB_KEY}`
-                    }
-                }
-            );
-                setMovies(data.results);
-            } catch (error) {
-                setIsError(true);
-            } finally {
-                setIsPending(false);
-            }
-        };
-
-        fetchMovies();
-    }, [page, category]);
+    const { movies, isPending, isError } = useMovies(category || 'popular', page);
 
     if (isError) {
         return (
-            <div className="flex flex-col items-center justify-center h-screen">
-                <span>에러가 발생했습니다. 다시 시도해주세요.</span>
-                <button onClick={() => window.location.reload()}>
+            <div className="flex flex-col items-center justify-center h-screen bg-black text-white">
+                <span className="text-xl mb-4">에러가 발생했습니다. 다시 시도해주세요.</span>
+                <button 
+                    className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    onClick={() => window.location.reload()}
+                >
                     새로고침
                 </button>
             </div>
@@ -56,32 +32,30 @@ export default function MoviePage() : React.ReactElement {
     }
 
     return (
-        <>
-            <div className="flex justify-center items-center gap-4">
-                <button 
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700
-                    disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={page === 1}
-                    onClick={() : void => setPage((prev) : number => prev - 1)}
-                >{'<'}</button>
-                <span>{page}</span>
-                <button 
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700
-                    disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={page === 100}
-                    onClick={() : void => setPage((prev) : number => prev + 1)}
-                >{'>'}</button>
+        <div className="min-h-screen bg-black text-white pt-16">
+            <div className="container mx-auto px-4">
+                <h1 className="text-3xl font-bold mb-8">
+                    {category && CATEGORY_TITLES[category as keyof typeof CATEGORY_TITLES]}
+                </h1>
+
+                {isPending ? (
+                    <div className="flex justify-center items-center h-[60vh]">
+                        <LoadingSpinner />
+                    </div>
+                ) : (
+                    <>
+                        <Pagination 
+                            currentPage={page}
+                            onPageChange={setPage}
+                        />
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                            {movies.map((movie) : React.ReactElement => (
+                                <MovieCard key={movie.id} movie={movie} />
+                            ))}
+                        </div>
+                    </>
+                )}
             </div>
-            {isPending && <LoadingSpinner />}
-            {!isPending && (
-                <div className="p-10 grid grid-cols-4 sm:grid-cols-2 md:grid-cols-3 
-                lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                    <h1>Movie Page</h1>
-            {movies.map((movie) : React.ReactElement => (
-                <MovieCard key={movie.id} movie={movie} />
-                ))}
-                </div>
-            )}
-        </>
+        </div>
     );
 }

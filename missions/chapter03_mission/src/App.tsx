@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import Navbar from './components/Navbar';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import MovieDetailPage from './pages/MovieDetailPage';
+import LoadingSpinnerPage from './pages/LoadingSpinnerPage';
 
 const Layout = () : React.ReactElement => {
   return (
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: 'movie/:category/:movieId',
         element: <MovieDetailPage />,
+      },
+      {
+        path: 'loading-spinner',
+        element: <LoadingSpinnerPage />,
       },
     ],
   },
