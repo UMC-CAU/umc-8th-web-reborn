@@ -1,0 +1,11 @@
+/* index.css */
+@import "tailwindcss";
+
+/* 전역 스타일 */
+@layer base {
+  html {
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  }
+}
+
+/* 커스텀 스타일 */
