@@ -154,7 +154,7 @@ export default function MovieDetailPage() : React.ReactElement {
                                         <img 
                                             src={actor.profile_path 
                                                 ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
-                                                : 'https://via.placeholder.com/185x185?text=No+Image'
+                                                : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(actor.name)}&backgroundColor=808080&textColor=ffffff`
                                             }
                                             alt={actor.name}
                                             className="w-full h-full object-cover"
