@@ -1,39 +1,56 @@
-import axios from "axios";
-import { LocalStorageKey } from "../constants/key";
+import axios from 'axios';
+import { getAccessToken, getRefreshToken } from '../utils/auth';
 
-const axiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_SERVER_API_URL,
-    headers: {
-        "Content-Type": "application/json",
-    },
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+export const api = axios.create({
+  baseURL: BASE_URL,
+  timeout: 5000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// 요청 인터셉터
-axiosInstance.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem(LocalStorageKey.ACCESS_TOKEN);
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
+api.interceptors.request.use(
+  (config) => {
+    const token = getAccessToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
-// 응답 인터셉터
-axiosInstance.interceptors.response.use(
-    (response) => {
-        return response;
-    },
-    (error) => {
-        if (error.response?.status === 401) {
-            localStorage.removeItem(LocalStorageKey.ACCESS_TOKEN);
-            window.location.href = '/login';
-        }
-        return Promise.reject(error);
-    }
-);
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
-export default axiosInstance;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = getRefreshToken();
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
+
+        const response = await axios.post(`${BASE_URL}/auth/refresh`, {
+          refreshToken,
+        });
+
+        const { accessToken } = response.data;
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+        return api(originalRequest);
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);

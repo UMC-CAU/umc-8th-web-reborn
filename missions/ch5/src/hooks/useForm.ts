@@ -37,7 +37,7 @@ function useForm<T>({initialValue, validate}: UseFormProps<T>) {
         e.preventDefault();
         
         // Mark all fields as touched on submit
-        const allTouched = Object.keys(values).reduce((acc, key) => {
+        const allTouched = Object.keys(values as Record<keyof T, unknown>).reduce((acc, key) => {
             acc[key as keyof T] = true;
             return acc;
         }, {} as Record<keyof T, boolean>);

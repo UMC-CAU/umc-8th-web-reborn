@@ -1,5 +1,5 @@
 import { RequestLoginDto, RequestSignupDto, ResponseLoginDto, ResponseMyInfoDto, ResponseSignupDto, ResponseLogoutDto } from "../types/auth";
-import axiosInstance from "./axios";
+import { api as axiosInstance } from "./axios";
 
 export const postSignup = async (body: RequestSignupDto): Promise<ResponseSignupDto> => {
     const { data } = await axiosInstance.post<ResponseSignupDto>(
@@ -32,6 +32,22 @@ export const postLogout = async () => {
         `/api/auth/logout`
     );
 
+    return data;
+};
+
+export const refreshAccessToken = async (): Promise<ResponseLoginDto> => {
+    const { data } = await axiosInstance.post<ResponseLoginDto>(
+        `/api/auth/refresh`
+    );
+
+    return data;
+};
+
+export const postGoogleLogin = async (accessToken: string): Promise<ResponseLoginDto> => {
+    const { data } = await axiosInstance.post<ResponseLoginDto>(
+        '/api/auth/google',
+        { accessToken }
+    );
     return data;
 };
 

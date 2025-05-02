@@ -1,75 +1,56 @@
-import { createContext, PropsWithChildren, useContext } from "react";
-import { RequestLoginDto } from "../types/auth";
-import { useLocalStorage } from "../hooks/useLocalStorage";
-import { LocalStorageKey } from "../constants/key";
-import { postSignin, postLogout } from "../apis/auth";
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { AuthContextType, AuthState, LoginResponse } from '../types/auth';
+import { setAuthToken, removeAuthToken } from '../utils/auth';
 
-interface AuthContextType {
-    accessToken: string | null;
-    refreshToken: string | null;
-    login: (signInData: RequestLoginDto) => Promise<void>;
-    logout: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType>({
-    accessToken: null,
-    refreshToken: null,
-    login: () => Promise.resolve(),
-    logout: () => Promise.resolve(),
-});
-
-export const AuthProvider = ({ children }: PropsWithChildren) => {
-    const [accessToken, setAccessToken] = useLocalStorage<string | null>(LocalStorageKey.ACCESS_TOKEN, null);
-    const [refreshToken, setRefreshToken] = useLocalStorage<string | null>(LocalStorageKey.REFRESH_TOKEN, null);
-
-    const login = async (signInData: RequestLoginDto) => {
-        try {
-            const { data } = await postSignin(signInData);
-
-        if (data) {
-            const newAccessToken = data.accessToken;
-            const newRefreshToken = data.refreshToken;
-
-            setAccessToken(newAccessToken);
-            setRefreshToken(newRefreshToken);
-
-                alert("로그인 성공");
-            }
-        } catch (error) {
-            console.error("로그인 실패", error);
-            alert("로그인 실패");
-        }
-    };
-
-    const logout = async () => {
-        try {
-            await postLogout();
-            setAccessToken(null);
-            setRefreshToken(null);
-            alert("로그아웃 성공");
-        } catch (error) {
-            console.error("로그아웃 실패", error);
-            alert("로그아웃 실패");
-        }
-    };
-
-    return (
-        <AuthContext.Provider value={{ accessToken, refreshToken, login, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
+const initialState: AuthState = {
+  isAuthenticated: false,
+  user: null,
+  accessToken: null,
 };
 
-export default AuthContext;
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [authState, setAuthState] = useState<AuthState>(initialState);
+
+  const login = (response: LoginResponse) => {
+    const { accessToken, refreshToken, user } = response;
+    setAuthToken(accessToken, refreshToken);
+    setAuthState({
+      isAuthenticated: true,
+      user,
+      accessToken,
+    });
+  };
+
+  const logout = () => {
+    removeAuthToken();
+    setAuthState(initialState);
+  };
+
+  const updateAccessToken = (token: string) => {
+    setAuthState(prev => ({
+      ...prev,
+      accessToken: token,
+    }));
+  };
+
+  const value = {
+    ...authState,
+    login,
+    logout,
+    updateAccessToken,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-
-    if (!context) {
-        throw new Error("useAuth must be used within an AuthProvider");
-    }
-
-    return context;
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
 
 

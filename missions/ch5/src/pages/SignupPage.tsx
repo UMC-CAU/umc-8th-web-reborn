@@ -1,40 +1,48 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 import useForm from '../hooks/useForm';
-import { UserSignupInformation, validateSignup } from '../utils/validate';
-
-// Zod 스키마 정의
-const schema = z.object({
-    email: z.string()
-        .email({ message: '이메일 형식이 올바르지 않습니다.' }),
-    password: z.string()
-        .min(8, { message: '비밀번호는 8자 이상이어야 합니다.' })
-        .max(20, { message: '비밀번호는 20자 이하여야 합니다.' }),
-    confirmPassword: z.string()
-        .min(8, { message: '비밀번호는 8자 이상이어야 합니다.' })
-        .max(20, { message: '비밀번호는 20자 이하여야 합니다.' })
-}).refine((data) => data.password === data.confirmPassword, {
-    message: "비밀번호가 일치하지 않습니다.",
-    path: ["confirmPassword"]
-});
+import { SignupFormData, signupSchema } from '../types/auth';
+import { ZodError } from 'zod';
 
 const SignupPage = (): React.ReactElement => {
     const navigate = useNavigate();
-    const { values, errors, touched, getInputProps, handleSubmit } = useForm<UserSignupInformation>({
+    const { values, errors, touched, getInputProps, handleSubmit } = useForm<SignupFormData>({
         initialValue: {
             email: '',
             password: '',
             confirmPassword: ''
         },
-        validate: validateSignup
+        validate: (values) => {
+            try {
+                signupSchema.parse(values);
+                return {
+                    email: null,
+                    password: null,
+                    confirmPassword: null
+                };
+            } catch (error) {
+                if (error instanceof ZodError) {
+                    return {
+                        email: error.issues.find(e => e.path[0] === 'email')?.message || null,
+                        password: error.issues.find(e => e.path[0] === 'password')?.message || null,
+                        confirmPassword: error.issues.find(e => e.path[0] === 'confirmPassword')?.message || null
+                    };
+                }
+                return {
+                    email: '유효성 검사 오류',
+                    password: '유효성 검사 오류',
+                    confirmPassword: '유효성 검사 오류'
+                };
+            }
+        }
     });
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const isValid = await handleSubmit(e);
+        handleSubmit(e);
         
-        if (isValid) {
+        // 에러가 없는 경우에만 회원가입 처리
+        if (Object.values(errors).every(error => error === null)) {
             // TODO: 회원가입 API 호출
             console.log('회원가입 시도:', values);
             navigate('/login');
@@ -45,7 +53,7 @@ const SignupPage = (): React.ReactElement => {
         return Object.values(errors).some(error => error !== null);
     }, [errors]);
 
-    const inputClassName = (fieldName: keyof UserSignupInformation) => `
+    const inputClassName = (fieldName: keyof SignupFormData) => `
         border border-[#ccc] 
         w-[300px] 
         p-[10px] 

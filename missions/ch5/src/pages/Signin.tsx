@@ -1,15 +1,36 @@
 import { useNavigate } from 'react-router-dom';
 import useForm from '../hooks/useForm';
-import { UserSigninInformation, validateSignin } from '../utils/validate';
+import { SigninFormData, signinSchema } from '../types/auth';
+import { ZodError } from 'zod';
 
-const Signin = () => {
+const Signin = () => {      
     const navigate = useNavigate();
-    const { values, errors, touched, getInputProps, handleSubmit } = useForm<UserSigninInformation>({
+    const { errors, touched, getInputProps, handleSubmit } = useForm<SigninFormData>({
         initialValue: {
             email: '',
             password: ''
         },
-        validate: validateSignin
+        validate: (values) => {
+            try {
+                signinSchema.parse(values);
+                return {
+                    email: null,
+                    password: null
+                };
+            } catch (error) {
+                if (error instanceof Error) {
+                    const zodError = JSON.parse(error.message);
+                    return {
+                        email: zodError.find((e: ZodError) => e.path[0] === 'email')?.message || null,
+                        password: zodError.find((e: ZodError) => e.path[0] === 'password')?.message || null
+                    };
+                }
+                return {
+                    email: '유효성 검사 오류',
+                    password: '유효성 검사 오류'
+                };
+            }
+        }
     });
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
