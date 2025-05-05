@@ -1,6 +1,6 @@
-import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const PrivateRoute: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -12,4 +12,4 @@ const PrivateRoute: React.FC = () => {
   return <Outlet />;
 };
 
-export default PrivateRoute; 
+export default PrivateRoute;

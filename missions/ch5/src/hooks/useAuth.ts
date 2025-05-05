@@ -1,15 +1,23 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { postSignin, getMyInfo, postLogout, postGoogleLogin } from '../apis/auth';
-import { useLocalStorage } from './useLocalStorage';
-import { LocalStorageKey } from '../constants/key';
-import { RequestLoginDto } from '../types/auth';
-import Cookies from 'js-cookie';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  postSignin,
+  getMyInfo,
+  postLogout,
+  postGoogleLogin,
+} from "../apis/auth";
+import { useLocalStorage } from "./useLocalStorage";
+import { LocalStorageKey } from "../constants/key";
+import { RequestLoginDto } from "../types/auth";
+import Cookies from "js-cookie";
 
 export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [accessToken, setAccessToken] = useLocalStorage(LocalStorageKey.ACCESS_TOKEN, '');
+  const [accessToken, setAccessToken] = useLocalStorage(
+    LocalStorageKey.ACCESS_TOKEN,
+    "",
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,7 +27,7 @@ export const useAuth = () => {
           await getMyInfo();
           setIsAuthenticated(true);
         } catch {
-          setAccessToken('');
+          setAccessToken("");
           setIsAuthenticated(false);
         }
       }
@@ -32,59 +40,59 @@ export const useAuth = () => {
   const login = async (loginData: RequestLoginDto) => {
     const response = await postSignin(loginData);
     const { accessToken: newAccessToken, refreshToken } = response.data;
-    
+
     // Access Token은 localStorage에 저장
     setAccessToken(newAccessToken);
-    
+
     // Refresh Token은 httpOnly 쿠키로 저장
-    Cookies.set('refreshToken', refreshToken, {
+    Cookies.set("refreshToken", refreshToken, {
       expires: 14, // 14일
       secure: true,
-      sameSite: 'strict',
-      path: '/'
+      sameSite: "strict",
+      path: "/",
     });
-    
+
     setIsAuthenticated(true);
-    navigate('/home');
+    navigate("/home");
   };
 
   const loginWithGoogle = async (googleAccessToken: string) => {
     try {
       const response = await postGoogleLogin(googleAccessToken);
       const { accessToken: newAccessToken, refreshToken } = response.data;
-      
+
       // Access Token은 localStorage에 저장
       setAccessToken(newAccessToken);
-      
+
       // Refresh Token은 httpOnly 쿠키로 저장
-      Cookies.set('refreshToken', refreshToken, {
+      Cookies.set("refreshToken", refreshToken, {
         expires: 14, // 14일
         secure: true,
-        sameSite: 'strict',
-        path: '/'
+        sameSite: "strict",
+        path: "/",
       });
-      
+
       setIsAuthenticated(true);
-      navigate('/home');
+      navigate("/home");
     } catch (error) {
-      console.error('Google login failed:', error);
+      console.error("Google login failed:", error);
     }
   };
 
   const logout = async () => {
     try {
       await postLogout();
-      setAccessToken('');
-      Cookies.remove('refreshToken');
+      setAccessToken("");
+      Cookies.remove("refreshToken");
       setIsAuthenticated(false);
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
       // 에러가 발생해도 로컬의 인증 정보는 삭제
-      setAccessToken('');
-      Cookies.remove('refreshToken');
+      setAccessToken("");
+      Cookies.remove("refreshToken");
       setIsAuthenticated(false);
-      navigate('/login');
+      navigate("/login");
     }
   };
 
@@ -95,4 +103,4 @@ export const useAuth = () => {
     loginWithGoogle,
     logout,
   };
-}; 
+};

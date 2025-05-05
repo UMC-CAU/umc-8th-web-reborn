@@ -1,115 +1,237 @@
-import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import useForm from '../hooks/useForm';
-import { UserSigninInformation, validateSignin } from '../utils/validate';
-import { useAuth } from '../hooks/useAuth';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "../components/GoogleLogin";
+import { useAuth } from "../context/AuthContext";
+import { postSignin } from "../apis/auth";
+import useForm from "../hooks/useForm";
+import { SigninFormData, signinSchema } from "../types/auth";
+import { z } from "zod";
 
-const LoginPage: React.FC = () => {
-    const navigate = useNavigate();
-    const { login } = useAuth();
-    const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
-    const { values, errors, touched, getInputProps, handleSubmit } = useForm<UserSigninInformation>({
-        initialValue: {
-            email: '',
-            password: ''
-        },
-        validate: validateSignin
+  const { values, errors, touched, getInputProps, handleSubmit } =
+    useForm<SigninFormData>({
+      initialValue: {
+        email: "",
+        password: "",
+      },
+      validate: (values) => {
+        try {
+          signinSchema.parse(values);
+          return {
+            email: null,
+            password: null,
+          };
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            // Zod error 형식에 맞게 처리
+            return {
+              email:
+                error.errors.find((e) => e.path[0] === "email")?.message ||
+                null,
+              password:
+                error.errors.find((e) => e.path[0] === "password")?.message ||
+                null,
+            };
+          }
+          return {
+            email: "유효성 검사 오류",
+            password: "유효성 검사 오류",
+          };
+        }
+      },
     });
 
-    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setError(null);
-        const isValid = await handleSubmit(e);
+  const [error, setError] = useState("");
+
+  const handleLoginSuccess = () => {
+    navigate("/", { replace: true });
+  };
+
+  const handleLoginError = (error: string) => {
+    setError(error);
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSubmit(e);
+
+    // errors 객체에 오류가 있는지 확인
+    if (Object.values(errors).some((err) => err !== null)) {
+      return;
+    }
+
+    setError("");
+    setIsLoading(true);
+
+    try {
+      // 테스트 계정 처리
+      if (
+        values.email === "admin@naver.com" &&
+        values.password === "admin12345"
+      ) {
+        // 테스트 계정용 모의 데이터
+        const mockData = {
+          accessToken: "test-access-token",
+          refreshToken: "test-refresh-token",
+          user: {
+            id: 1,
+            email: "admin@naver.com",
+            name: "관리자",
+          },
+        };
+
+        login(mockData);
+        navigate("/", { replace: true });
+        return;
+      }
+
+      // localStorage에서 가입된 유저인지 확인 (회원가입 데이터 처리)
+      const storedToken = localStorage.getItem("accessToken");
+      if (storedToken && storedToken.startsWith("signup-")) {
+        // 회원가입했던 이메일 사용자라면 임시 로그인 처리
+        const mockResult = {
+          accessToken: storedToken,
+          refreshToken: `refresh-${Date.now()}-token`,
+          user: {
+            id: Date.now(),
+            email: values.email,
+            name: values.email.split("@")[0],
+          },
+        };
         
-        if (isValid) {
-            try {
-                setIsLoading(true);
-                await login(values);
-            } catch (error) {
-                setError('이메일 또는 비밀번호가 올바르지 않습니다.');
-            } finally {
-                setIsLoading(false);
-            }
-        }
-    };
+        login(mockResult);
+        navigate("/", { replace: true });
+        return;
+      }
 
-    const isDisabled = useMemo(() => {
-        return Object.values(errors).some(error => error !== null) || isLoading;
-    }, [errors, isLoading]);
+      // 실제 API 호출
+      const data = await postSignin({
+        email: values.email,
+        password: values.password,
+      });
+      login(data);
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Login failed:", err);
+      setError("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    const inputClassName = (fieldName: "email" | "password") => `
-        border border-[#ccc] 
-        w-[300px] 
-        p-[10px] 
-        rounded-sm
-        focus:border-[#807bff]
-        ${errors?.[fieldName] && touched?.[fieldName] 
-            ? "border-red-500 bg-red-200" 
-            : "border-gray-300"}
-    `;
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <button
+            onClick={() => navigate("/")}
+            className="mb-4 text-indigo-600 hover:text-indigo-500 flex items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+            홈으로 돌아가기
+          </button>
 
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        로그인
-                    </h2>
-                </div>
-                <form className="mt-8 space-y-6" onSubmit={onSubmit}>
-                    <div className="flex flex-col items-center justify-center h-full gap-4">
-                        <div className="flex flex-col gap-3">
-                            <input
-                                {...getInputProps("email")}
-                                type="email"
-                                className={inputClassName("email")}
-                                placeholder="이메일"
-                            />
-                            {errors?.email && touched?.email && (
-                                <div className="text-red-500 text-sm">{errors.email}</div>
-                            )}
-                            
-                            <input
-                                {...getInputProps("password")}
-                                type="password"
-                                className={inputClassName("password")}
-                                placeholder="비밀번호"
-                            />
-                            {errors?.password && touched?.password && (
-                                <div className="text-red-500 text-sm">{errors.password}</div>
-                            )}
-                        </div>
-                    </div>
-
-                    {error && (
-                        <div className="text-red-500 text-sm text-center">{error}</div>
-                    )}
-
-                    <div>
-                        <button
-                            type="submit"
-                            disabled={isDisabled}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                        >
-                            {isLoading ? '로그인 중...' : '로그인'}
-                        </button>
-                    </div>
-
-                    <div className="text-center">
-                        <button
-                            type="button"
-                            onClick={() => navigate('/signup')}
-                            className="text-sm text-indigo-600 hover:text-indigo-500"
-                        >
-                            계정이 없으신가요? 회원가입하기
-                        </button>
-                    </div>
-                </form>
-            </div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            로그인
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            또는{" "}
+            <a
+              href="/signup"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              회원가입하기
+            </a>
+          </p>
+          <div className="mt-2 text-center text-xs text-gray-500">
+            테스트 계정: admin@naver.com / admin12345
+          </div>
         </div>
-    );
+        {error && (
+          <div className="rounded-md bg-red-50 p-4">
+            <div className="text-sm text-red-700">{error}</div>
+          </div>
+        )}
+        <form className="mt-8 space-y-6" onSubmit={onSubmit}>
+          <div className="rounded-md shadow-sm space-y-4">
+            <div>
+              <label htmlFor="email" className="sr-only">
+                이메일
+              </label>
+              <input
+                {...getInputProps("email")}
+                type="email"
+                className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="이메일"
+              />
+              {touched.email && errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              )}
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">
+                비밀번호
+              </label>
+              <input
+                {...getInputProps("password")}
+                type="password"
+                className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="비밀번호"
+              />
+              {touched.password && errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "로그인 중..." : "로그인"}
+            </button>
+          </div>
+        </form>
+
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-gray-50 text-gray-500">
+                소셜 계정으로 로그인
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <GoogleLogin
+              onSuccess={handleLoginSuccess}
+              onError={handleLoginError}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-export default LoginPage;
+export default Login;

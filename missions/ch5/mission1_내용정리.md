@@ -3,6 +3,7 @@
 ## 1. Access Token과 Refresh Token의 개념
 
 ### Access Token
+
 - **정의**: 사용자의 인증 상태를 증명하는 단기 토큰
 - **특징**:
   - 짧은 유효 기간 (보통 30분~2시간)
@@ -12,11 +13,12 @@
   ```typescript
   // API 요청시 헤더에 포함
   headers: {
-    Authorization: `Bearer ${accessToken}`
+    Authorization: `Bearer ${accessToken}`;
   }
   ```
 
 ### Refresh Token
+
 - **정의**: Access Token을 재발급받기 위한 장기 토큰
 - **특징**:
   - 긴 유효 기간 (보통 2주~1달)
@@ -25,16 +27,23 @@
 - **사용**:
   ```typescript
   // Access Token 만료시 Refresh Token으로 재발급
-  const response = await axios.post('/api/auth/refresh');
+  const response = await axios.post("/api/auth/refresh");
   const newAccessToken = response.data.accessToken;
   ```
 
 ## 2. 주요 구현 코드
 
 ### 2.1 토큰 저장 (hooks/useAuth.ts)
+
 ```typescript
-const [accessToken, setAccessToken] = useLocalStorage(LocalStorageKey.ACCESS_TOKEN, '');
-const [refreshToken, setRefreshToken] = useLocalStorage(LocalStorageKey.REFRESH_TOKEN, '');
+const [accessToken, setAccessToken] = useLocalStorage(
+  LocalStorageKey.ACCESS_TOKEN,
+  "",
+);
+const [refreshToken, setRefreshToken] = useLocalStorage(
+  LocalStorageKey.REFRESH_TOKEN,
+  "",
+);
 
 // 로그인 성공시
 const login = async (loginData: RequestLoginDto) => {
@@ -45,16 +54,17 @@ const login = async (loginData: RequestLoginDto) => {
 ```
 
 ### 2.2 토큰 갱신 API (apis/auth.ts)
+
 ```typescript
 export const refreshAccessToken = async (): Promise<ResponseLoginDto> => {
-  const { data } = await axiosInstance.post<ResponseLoginDto>(
-    `/api/auth/refresh`
-  );
+  const { data } =
+    await axiosInstance.post<ResponseLoginDto>(`/api/auth/refresh`);
   return data;
 };
 ```
 
 ### 2.3 자동 토큰 갱신 (apis/axios.ts)
+
 ```typescript
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -72,21 +82,24 @@ axiosInstance.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 ```
 
 ## 3. 보안 고려사항
 
 ### 3.1 토큰 저장
+
 - Access Token: localStorage 또는 메모리
 - Refresh Token: httpOnly 쿠키 (XSS 방지)
 
 ### 3.2 토큰 전송
+
 - Authorization 헤더 사용
 - Bearer 스키마 적용
 
 ### 3.3 에러 처리
+
 - 401 에러: 토큰 만료
 - 403 에러: 권한 없음
 - Refresh Token 만료: 로그아웃 처리
@@ -94,14 +107,17 @@ axiosInstance.interceptors.response.use(
 ## 4. 구현시 주의사항
 
 1. **무한 재시도 방지**
-   - _retry 플래그로 재시도 횟수 제한
+
+   - \_retry 플래그로 재시도 횟수 제한
    - 재시도 실패시 로그아웃 처리
 
 2. **토큰 저장소 선택**
+
    - Access Token: localStorage (편의성)
    - Refresh Token: httpOnly 쿠키 (보안성)
 
 3. **에러 처리**
+
    - 적절한 에러 메시지 표시
    - 사용자 친화적인 처리 방식
 
@@ -113,13 +129,15 @@ axiosInstance.interceptors.response.use(
 ## 5. 테스트 항목
 
 1. **토큰 갱신 플로우**
+
    - Access Token 만료시 자동 갱신
    - 갱신 실패시 로그아웃
 
 2. **보안 테스트**
+
    - XSS 취약점 테스트
    - CSRF 방어 테스트
 
 3. **에러 처리**
    - 네트워크 오류 처리
-   - 서버 오류 처리 
+   - 서버 오류 처리

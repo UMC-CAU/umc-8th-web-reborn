@@ -1,53 +1,62 @@
-import { RequestLoginDto, RequestSignupDto, ResponseLoginDto, ResponseMyInfoDto, ResponseSignupDto, ResponseLogoutDto } from "../types/auth";
-import { api as axiosInstance } from "./axios";
+import {
+  RequestLoginDto,
+  RequestSignupDto,
+  ResponseLoginDto,
+  ResponseMyInfoDto,
+  ResponseSignupDto,
+  ResponseLogoutDto,
+} from "../types/auth";
+import { axiosInstance } from "./axios";
 
-export const postSignup = async (body: RequestSignupDto): Promise<ResponseSignupDto> => {
-    const { data } = await axiosInstance.post<ResponseSignupDto>(
-        `/api/auth/signup`,
-        body
-    );
+export const postSignup = async (
+  body: RequestSignupDto,
+): Promise<ResponseSignupDto> => {
+  const { data } = await axiosInstance.post<ResponseSignupDto>(
+    `/v1/auth/signup`,
+    body,
+  );
 
-    return data;
+  return data;
 };
 
-export const postSignin = async (body: RequestLoginDto): Promise<ResponseLoginDto> => {
-    const { data } = await axiosInstance.post<ResponseLoginDto>(
-        `/api/auth/signin`,
-        body
-    );
+export const postSignin = async (
+  body: RequestLoginDto,
+): Promise<ResponseLoginDto> => {
+  const { data } = await axiosInstance.post<ResponseLoginDto>(
+    `/v1/auth/signin`,
+    body,
+  );
 
-    return data;
+  return data;
 };
 
 export const getMyInfo = async (): Promise<ResponseMyInfoDto> => {
-    const { data } = await axiosInstance.get<ResponseMyInfoDto>(
-        `/api/auth/my-info`
-    );
+  const { data } =
+    await axiosInstance.get<ResponseMyInfoDto>(`/v1/auth/my-info`);
 
-    return data;
+  return data;
 };
 
 export const postLogout = async () => {
-    const { data } = await axiosInstance.post<ResponseLogoutDto>(
-        `/api/auth/logout`
-    );
+  const { data } =
+    await axiosInstance.post<ResponseLogoutDto>(`/v1/auth/logout`);
 
-    return data;
+  return data;
 };
 
 export const refreshAccessToken = async (): Promise<ResponseLoginDto> => {
-    const { data } = await axiosInstance.post<ResponseLoginDto>(
-        `/api/auth/refresh`
-    );
+  const { data } =
+    await axiosInstance.post<ResponseLoginDto>(`/v1/auth/refresh`);
 
-    return data;
+  return data;
 };
 
-export const postGoogleLogin = async (accessToken: string): Promise<ResponseLoginDto> => {
-    const { data } = await axiosInstance.post<ResponseLoginDto>(
-        '/api/auth/google',
-        { accessToken }
-    );
-    return data;
+export const postGoogleLogin = async (
+  accessToken: string,
+): Promise<ResponseLoginDto> => {
+  const { data } = await axiosInstance.post<ResponseLoginDto>(
+    "/v1/auth/google",
+    { accessToken },
+  );
+  return data;
 };
-

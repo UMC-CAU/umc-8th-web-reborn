@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { ReactNode } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({
   children,
-  redirectPath = '/login'
+  redirectPath = "/login",
 }: ProtectedRouteProps) => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
@@ -19,4 +19,4 @@ export const ProtectedRoute = ({
   }
 
   return <>{children}</>;
-}; 
+};

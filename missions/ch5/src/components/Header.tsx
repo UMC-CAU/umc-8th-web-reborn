@@ -1,6 +1,6 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -8,7 +8,7 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -26,4 +26,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header; 
+export default Header;

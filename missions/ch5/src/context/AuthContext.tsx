@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { AuthContextType, AuthState, LoginResponse } from '../types/auth';
-import { setAuthToken, removeAuthToken } from '../utils/auth';
+import { createContext, useContext, useState, ReactNode } from "react";
+import { AuthContextType, AuthState, LoginResponse } from "../types/auth";
+import { setAuthToken, removeAuthToken } from "../utils/auth";
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateAccessToken = (token: string) => {
-    setAuthState(prev => ({
+    setAuthState((prev) => ({
       ...prev,
       accessToken: token,
     }));
@@ -48,9 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
-
-
