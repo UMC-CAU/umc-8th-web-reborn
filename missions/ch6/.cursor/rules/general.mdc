@@ -1,0 +1,53 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 인증/인가 관련 코드 규칙
+
+## 1. 인증 상태 관리
+- 전역 상태 관리는 Redux 또는 Recoil을 사용하여 구현
+- 인증 상태는 별도의 atom/slice로 관리
+- 토큰 관리는 secure 옵션이 적용된 httpOnly 쿠키 사용
+
+## 2. Protected Route 구현
+- src/routes/ProtectedRoute.tsx 컴포넌트로 구현
+- 인증이 필요한 모든 라우트는 ProtectedRoute로 래핑
+- 미인증 상태에서 접근 시 로그인 페이지로 자동 리다이렉트
+
+## 3. 토큰 관리
+- AccessToken과 RefreshToken은 별도의 hooks로 관리
+- 토큰 갱신 로직은 axios interceptor로 구현
+- RefreshToken 만료 시 자동 로그아웃 처리
+
+## 4. API 요청 관리
+- axios instance 생성 시 baseURL과 timeout 설정 필수
+- 모든 API 요청은 try-catch로 에러 핸들링
+- API 응답 타입은 interface로 명시적 정의
+
+## 5. 소셜 로그인
+- OAuth 2.0 flow 준수
+- 환경변수로 client ID/secret 관리
+- 콜백 URL은 상수로 관리
+
+## 6. 코드 구조
+- 인증 관련 로직은 src/auth 디렉토리에서 관리
+- 공통 타입은 src/types에서 관리
+- 상수는 src/constants에서 관리
+
+## 7. 보안
+- 민감한 정보는 .env 파일로 관리
+- CSRF 토큰 적용
+- XSS 방지를 위한 입력값 검증
+
+## 8. 에러 처리
+- 401, 403 에러는 전역 에러 핸들러로 처리
+- 사용자 친화적인 에러 메시지 표시
+- 개발 환경에서만 상세 에러 로깅
+
+## 9. 테스트
+- 인증 관련 주요 기능은 단위 테스트 필수
+- 보호된 라우트 접근 테스트 구현
+- 토큰 갱신 flow 테스트 구현
+
+
