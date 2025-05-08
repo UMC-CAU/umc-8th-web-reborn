@@ -5,7 +5,7 @@ import { QUERY_KEYS } from "../../constants/key";
 
 function useGetLpList({cursor,search,order,limit}: PaginationDto) {
     return useQuery({
-        queryKey: [QUERY_KEYS.lps],
+        queryKey: [QUERY_KEYS.lps, { cursor, search, order, limit }],
         queryFn: () => 
             getLpList({
                 cursor,
@@ -23,8 +23,6 @@ function useGetLpList({cursor,search,order,limit}: PaginationDto) {
             // 그 이후에 해당 쿼리가 전혀 사용되지 않으면 gcTime이 지난 후에 제거한다. (garbage collection)
             // 예) 10분 동안 사용되지 않으면 해당 캐시 데이터가 삭제되어, 다시 요청 시 새 데이터를 받아오게 합니다.
             gcTime: 1000 * 60 * 10,
-            // 조건에 따라 쿼리를 실행 여부 제어
-            enabled: Boolean(search),
     })
 }
 

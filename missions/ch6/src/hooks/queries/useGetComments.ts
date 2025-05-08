@@ -1,31 +1,30 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "../../constants/key";
 import { PAGINATION_ORDER } from "../../enums/common";
-import { getLpList } from "../../apis/lp";
-import { ResponseLpListDto } from "../../types/lp";
+import { getCommentsByLpId } from "../../apis/comment";
+import { ResponseCommentListDto } from "../../types/comment";
 
-interface UseGetInfiniteLpListProps {
+interface UseGetCommentsProps {
+  lpId: number;
   limit?: number;
-  search?: string;
   order?: PAGINATION_ORDER;
 }
 
-export function useGetInfiniteLpList({
-  limit = 8,
-  search,
+function useGetComments({
+  lpId,
+  limit = 5,
   order = PAGINATION_ORDER.DESC,
-}: UseGetInfiniteLpListProps) {
-  return useInfiniteQuery<ResponseLpListDto>({
-    queryKey: [QUERY_KEYS.lps, { order, limit, search }],
+}: UseGetCommentsProps) {
+  return useInfiniteQuery<ResponseCommentListDto>({
+    queryKey: [QUERY_KEYS.comments, lpId, { order, limit }],
     queryFn: ({ pageParam }) =>
-      getLpList({
+      getCommentsByLpId(lpId, {
         cursor: pageParam as number,
         limit,
         order,
-        search,
       }),
-    getNextPageParam: (lastPage) => {
-      return lastPage.data.hasNext ? lastPage.data.nextCursor : undefined;
+    getNextPageParam: (lastPage: ResponseCommentListDto) => {
+      return lastPage.hasNext ? lastPage.nextCursor : undefined;
     },
     getPreviousPageParam: () => {
       // 첫 페이지의 이전 페이지 파라미터 (보통 필요 없음)
@@ -36,3 +35,5 @@ export function useGetInfiniteLpList({
     gcTime: 1000 * 60 * 5, // 5분
   });
 }
+
+export default useGetComments; 

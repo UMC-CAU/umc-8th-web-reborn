@@ -28,48 +28,19 @@ export const GoogleLogin = ({ onSuccess, onError }: GoogleLoginProps) => {
       try {
         console.log("Google OAuth success:", response);
 
-        const baseUrl =
-          import.meta.env.VITE_SERVER_API_URL || "http://localhost:8000";
-
-        // 백엔드 서버에 Google access token을 전송하여 인증
-        console.log("서버에 요청 보내기:", {
-          url: `${baseUrl}/v1/auth/google`,
+        const { data } = await axiosInstance.post("/v1/auth/google", {
           accessToken: response.access_token,
         });
 
-        // 오류가 발생하는 경우 목업 데이터로 진행 (테스트용)
-        try {
-          const { data } = await axiosInstance.post("/v1/auth/google", {
-            accessToken: response.access_token,
-          });
+        console.log("Backend auth response:", data);
 
-          console.log("Backend auth response:", data);
-
-          if (!data.accessToken || !data.refreshToken) {
-            throw new Error("토큰이 올바르게 수신되지 않았습니다.");
-          }
-
-          // 인증 상태 업데이트
-          login(data);
-          onSuccess?.();
-        } catch (apiError) {
-          console.warn("API 호출 실패, 목업 데이터 사용:", apiError);
-
-          // 테스트 계정용 모의 데이터 (실제 배포 시 제거 필요)
-          const mockData = {
-            accessToken: "test-google-access-token",
-            refreshToken: "test-google-refresh-token",
-            user: {
-              id: "google-user-123",
-              email: "google-user@example.com",
-              name: "구글 사용자",
-              profileImage: "https://via.placeholder.com/150",
-            },
-          };
-
-          login(mockData);
-          onSuccess?.();
+        if (!data.accessToken || !data.refreshToken) {
+          throw new Error("토큰이 올바르게 수신되지 않았습니다.");
         }
+
+        // 인증 상태 업데이트
+        login(data);
+        onSuccess?.();
       } catch (error) {
         console.error("Google login failed:", error);
         onError?.("Google 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.");

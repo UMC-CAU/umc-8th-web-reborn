@@ -1,15 +1,37 @@
-import { PaginationDto } from "../types/common";
 import { axiosInstance } from "./axios";
-import { ResponseLpListDto } from "../types/lp";
+import { PaginationDto } from "../types/common";
+import { ResponseLpDetailDto, ResponseLpListDto } from "../types/lp";
 
 export const getLpList = async (
     paginationDto: PaginationDto,
 ): Promise<ResponseLpListDto> => {
-    const { data } = await axiosInstance.get( "/v1/lps", {
-        params: paginationDto,
-    });
+    try {
+        const { cursor, limit, order, search } = paginationDto;
+        const response = await axiosInstance.get('/v1/lps', {
+            params: {
+                cursor,
+                limit,
+                order,
+                search
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("LP 목록 불러오기 실패:", error);
+        throw error;
+    }
+};
 
-    return data;
+export const getLpDetail = async (
+    lpId: number
+): Promise<ResponseLpDetailDto> => {
+    try {
+        const response = await axiosInstance.get(`/v1/lps/${lpId}`);
+        return response.data;
+    } catch (error) {
+        console.error(`LP 상세정보(ID: ${lpId}) 불러오기 실패:`, error);
+        throw error;
+    }
 };
 
 

@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, ReactNode } from "react";
-import { AuthContextType, AuthState, LoginResponse } from "../types/auth";
-import { setAuthToken, removeAuthToken } from "../utils/auth";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { AuthContextType, AuthState, LoginResponse, UserDto } from "../types/auth";
+import { setAuthToken, removeAuthToken, getAccessToken } from "../utils/auth";
+import { getMyInfo } from "../apis/auth";
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -12,6 +13,37 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [authState, setAuthState] = useState<AuthState>(initialState);
+
+  // 초기 로드 시 로컬 스토리지에서 토큰 확인
+  useEffect(() => {
+    const token = getAccessToken();
+    
+    if (token) {
+      // 토큰이 있는 경우 사용자 정보 가져오기
+      setAuthState(prev => ({
+        ...prev,
+        isAuthenticated: true,
+        accessToken: token,
+      }));
+      
+      // 사용자 정보 불러오기
+      fetchUserInfo();
+    }
+  }, []);
+
+  // 사용자 정보 가져오기
+  const fetchUserInfo = async () => {
+    try {
+      const response = await getMyInfo();
+      setAuthState(prev => ({
+        ...prev,
+        user: response as unknown as UserDto,
+      }));
+    } catch (error) {
+      console.error("사용자 정보 가져오기 실패:", error);
+      logout(); // 오류 발생 시 로그아웃 처리
+    }
+  };
 
   const login = (response: LoginResponse) => {
     const { accessToken, refreshToken, user } = response;

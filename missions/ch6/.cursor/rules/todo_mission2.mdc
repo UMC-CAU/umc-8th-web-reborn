@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 미션 2. 무한스크롤 부분 useInfiniteQuery로 무한스크롤 구현해보기 + 스켈레톤 UI
+
+미션2는 `useInfiniteQuery`를 이용하여 미션 1에서 만든 메인 화면의 데이터를 무한 스크롤로 구현하는 것입니다! 또한 `스켈레톤 UI`를 활용하여 데이터가 불러와지는 동안 로딩처리를 해봅니다.
+
+- [ ] **메인화면 무한 스크롤 구현**
+    - `useInfiniteQuery`를 사용하여 `/v1/lps` 데이터 페이지네이션
+    - `fetchNextPage` 함수를 IntersectionObserver와 연결
+    - 스크롤 시 자동으로 다음 페이지 데이터 로딩
+    - 오래된 순/최신순 정렬 기능 유지
+
+- [ ] **메인화면 스켈레톤 UI 구현**
+    - 데이터 로딩 중 LP 카드 자리에 스켈레톤 컴포넌트 표시
+    - 애니메이션 적용(깜빡이는 효과)
+    - 로딩 상태 분기 처리(`isFetching`, `isLoading` 활용)
+
+- [ ] **상세 페이지 댓글 무한 스크롤 구현**
+    - `/lp/:LPId` 상세 페이지에 댓글 목록 표시
+    - `useInfiniteQuery`로 댓글 데이터 페이지네이션
+    - 오래된 순/최신순 정렬 기능 구현
+    - 댓글 작성란은 디자인만 우선 구현
+
+- [ ] **댓글 스켈레톤 UI 구현**
+    - 댓글 로딩 중 스켈레톤 컴포넌트 표시
+    - 메인화면과 동일한 깜빡이는 애니메이션 적용
+    - 로딩 상태 분기 처리
+
+## 구현 시 참고사항
+- `useInfiniteQuery`의 `getNextPageParam` 옵션을 활용해 다음 페이지 키 설정
+- 스켈레톤 UI는 CSS의 `@keyframes`와 `animation` 속성으로 깜빡임 효과 구현
+- 무한 스크롤은 `react-intersection-observer` 라이브러리 활용 가능
+- 데이터 페칭 중복 방지를 위해 `keepPreviousData` 활용

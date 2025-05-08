@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "../components/GoogleLogin";
 import { useAuth } from "../context/AuthContext";
@@ -68,46 +68,6 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // 테스트 계정 처리
-      if (
-        values.email === "admin@naver.com" &&
-        values.password === "admin12345"
-      ) {
-        // 테스트 계정용 모의 데이터
-        const mockData = {
-          accessToken: "test-access-token",
-          refreshToken: "test-refresh-token",
-          user: {
-            id: 1,
-            email: "admin@naver.com",
-            name: "관리자",
-          },
-        };
-
-        login(mockData);
-        navigate("/", { replace: true });
-        return;
-      }
-
-      // localStorage에서 가입된 유저인지 확인 (회원가입 데이터 처리)
-      const storedToken = localStorage.getItem("accessToken");
-      if (storedToken && storedToken.startsWith("signup-")) {
-        // 회원가입했던 이메일 사용자라면 임시 로그인 처리
-        const mockResult = {
-          accessToken: storedToken,
-          refreshToken: `refresh-${Date.now()}-token`,
-          user: {
-            id: Date.now(),
-            email: values.email,
-            name: values.email.split("@")[0],
-          },
-        };
-        
-        login(mockResult);
-        navigate("/", { replace: true });
-        return;
-      }
-
       // 실제 API 호출
       const data = await postSignin({
         email: values.email,
@@ -158,9 +118,6 @@ const Login = () => {
               회원가입하기
             </a>
           </p>
-          <div className="mt-2 text-center text-xs text-gray-500">
-            테스트 계정: admin@naver.com / admin12345
-          </div>
         </div>
         {error && (
           <div className="rounded-md bg-red-50 p-4">

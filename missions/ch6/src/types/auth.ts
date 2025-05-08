@@ -43,6 +43,8 @@ export interface UserDto {
   email: string;
   name?: string;
   profileImage?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // API 응답 타입
@@ -75,4 +77,5 @@ export interface AuthContextType extends AuthState {
   login: (response: LoginResponse) => void;
   logout: () => void;
   updateAccessToken: (token: string) => void;
+  debugLogin?: () => void;
 }
