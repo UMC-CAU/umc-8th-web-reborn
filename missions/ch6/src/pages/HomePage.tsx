@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { PAGINATION_ORDER } from "../enums/common";
 import LpCard from "../components/LpCard/LpCard";
-import LoadingSpinner from "../components/LoadingSpinner";
 import Sidebar from "../components/Sidebar";
 import { useInView } from "react-intersection-observer";
 import { useGetInfiniteLpList } from "../hooks/queries/useGetInfiniteLpList";
@@ -70,10 +69,6 @@ const HomePage = () => {
       console.log("받아온 LP 데이터:", JSON.stringify(data, null, 2));
     }
   }, [data]);
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
 
   const getLps = () => {
     if (!data || !data.pages || !data.pages.length) return [];
@@ -208,7 +203,7 @@ const HomePage = () => {
                   ref={ref}
                   className="h-10 flex items-center justify-center my-6"
                 >
-                  {isFetchingNextPage && <LoadingSpinner />}
+                  {isFetchingNextPage}
                 </div>
               )}
 

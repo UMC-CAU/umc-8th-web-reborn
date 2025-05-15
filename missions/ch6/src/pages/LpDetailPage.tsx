@@ -1,6 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
 import useGetLpDetail from "../hooks/queries/useGetLpDetail";
-import LoadingSpinner from "../components/LoadingSpinner";
 import CommentList from "../components/CommentList";
 
 const LpDetailPage = () => {
@@ -10,11 +9,7 @@ const LpDetailPage = () => {
   const { data, isPending, isError } = useGetLpDetail(Number(lpId));
 
   if (isPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   if (isError || !data) {
