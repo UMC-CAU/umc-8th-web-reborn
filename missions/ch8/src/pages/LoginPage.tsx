@@ -180,10 +180,8 @@ const Login = () => {
               </span>
             </div>
           </div>
-
-          <div className="mt-6">
+          <div className="flex items-center justify-center gap-4">
             <GoogleLogin
-              // onSuccess={handleLoginSuccess}
               onError={handleLoginError}
             />
           </div>

@@ -132,7 +132,7 @@ export const GoogleLogin = ({ /* onSuccess, */ onError }: GoogleLoginProps) => {
         type="button"
       >
         <FcGoogle className="text-xl" />
-        <span>Google 설정 오류</span>
+        <span>Google로 로그인</span>
       </button>
     );
   }
