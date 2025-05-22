@@ -9,7 +9,7 @@ interface CommentListProps {
 }
 
 const CommentList = ({ lpId }: CommentListProps) => {
-  const [sortOrder, setSortOrder] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.DESC);
+  const [sortOrder, setSortOrder] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.desc);
   
   // IntersectionObserver ref for infinite scrolling
   const { ref, inView } = useInView({
@@ -25,7 +25,6 @@ const CommentList = ({ lpId }: CommentListProps) => {
     isFetchingNextPage,
     isLoading,
     isError,
-    isFetching,
   } = useGetComments({
     lpId,
     order: sortOrder,
@@ -42,9 +41,9 @@ const CommentList = ({ lpId }: CommentListProps) => {
   // 정렬 순서 변경 핸들러
   const handleSortChange = () => {
     setSortOrder(
-      sortOrder === PAGINATION_ORDER.DESC
-        ? PAGINATION_ORDER.ASC
-        : PAGINATION_ORDER.DESC
+      sortOrder === PAGINATION_ORDER.desc
+        ? PAGINATION_ORDER.asc
+        : PAGINATION_ORDER.desc
     );
   };
 
@@ -66,7 +65,7 @@ const CommentList = ({ lpId }: CommentListProps) => {
           onClick={handleSortChange}
           className="px-3 py-1 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center"
         >
-          {sortOrder === PAGINATION_ORDER.DESC ? "최신순" : "오래된순"}
+          {sortOrder === PAGINATION_ORDER.desc ? "최신순" : "오래된순"}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-4 w-4 ml-1"
@@ -79,7 +78,7 @@ const CommentList = ({ lpId }: CommentListProps) => {
               strokeLinejoin="round"
               strokeWidth={2}
               d={
-                sortOrder === PAGINATION_ORDER.DESC
+                sortOrder === PAGINATION_ORDER.desc
                   ? "M3 4h13M3 8h9M3 12h5M13 12L17 8m0 0l-4-4m4 4H9"
                   : "M3 4h13M3 8h9M3 12h5M13 12L17 16m0 0l-4 4m4-4H9"
               }
@@ -118,7 +117,7 @@ const CommentList = ({ lpId }: CommentListProps) => {
       ) : (
         <>
           {/* 댓글 목록 */}
-          {data?.pages.map((page, pageIndex) =>
+          {data?.pages.map((page) =>
             page.data.map((comment) => (
               <div
                 key={comment.id}
@@ -156,14 +155,14 @@ const CommentList = ({ lpId }: CommentListProps) => {
           )}
 
           {/* 더 이상 댓글이 없는 경우 */}
-          {!hasNextPage && !isLoading && data?.pages[0]?.data.length > 0 && (
+          {!hasNextPage && !isLoading && data?.pages[0]?.data && data.pages[0].data.length > 0 && (
             <div className="text-center text-gray-500 my-4">
               더 이상 표시할 댓글이 없습니다.
             </div>
           )}
 
           {/* 댓글이 없는 경우 */}
-          {!isLoading && data?.pages[0]?.data.length === 0 && (
+          {!isLoading && data?.pages[0]?.data && data.pages[0].data.length === 0 && (
             <div className="text-center py-8">
               <p className="text-gray-500">
                 아직 댓글이 없습니다. 첫 번째 댓글을 남겨보세요!

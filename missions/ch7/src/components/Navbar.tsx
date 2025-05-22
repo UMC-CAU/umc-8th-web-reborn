@@ -1,8 +1,18 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate("/login");
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    };
     
     return (
         <nav className="bg-white dark:bg-gray-900 shadow-md fixed w-full z-10">
@@ -13,8 +23,8 @@ const Navbar = () => {
                 >
                     SpinningSpinning Dolimpan
                 </Link>
-                <div className="space-x-6">
-                    {!isAuthenticated && (
+                <div className="space-x-6 flex items-center">
+                    {!isAuthenticated ? (
                         <>
                             <Link
                                 to="/login"
@@ -29,21 +39,26 @@ const Navbar = () => {
                                 Signup
                             </Link>
                         </>
+                    ) : (
+                        <>
+                            <Link
+                                to="/mypage"
+                                className="text-gray-800 dark:text-white hover:text-gray-400 dark:hover:text-gray-600"
+                            >
+                                My Page
+                            </Link>
+                            <button
+                                onClick={handleLogout}
+                                className="text-gray-800 dark:text-white hover:text-gray-400 dark:hover:text-gray-600"
+                            >
+                                Logout
+                            </button>
+                        </>
                     )}
                 </div>
             </div>
-            {isAuthenticated && (
-                <div className="flex items-center justify-between p-4">
-                    <Link
-                        to="/mypage"
-                        className="text-gray-800 dark:text-white hover:text-gray-400 dark:hover:text-gray-600"
-                    >
-                        My Page
-                    </Link>
-                </div>
-            )}
         </nav>
-    );   
+    );
 };
 
 export default Navbar;

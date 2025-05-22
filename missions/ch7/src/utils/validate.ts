@@ -9,7 +9,7 @@ function validateUser(values:UserSigninInformation){
         password: ""
     }
 
-    if(!/^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(values.email)){
+    if(!/^[a-zA-Z0-9+\-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(values.email)){
         errors.email = "올바른 이메일 형식이 아닙니다."
     }
 

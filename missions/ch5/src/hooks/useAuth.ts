@@ -7,15 +7,15 @@ import {
   postGoogleLogin,
 } from "../apis/auth";
 import { useLocalStorage } from "./useLocalStorage";
-import { LocalStorageKey } from "../constants/key";
+import { LOCAL_STORAGE_KEYS } from "../constants/key";
 import { RequestLoginDto } from "../types/auth";
 import Cookies from "js-cookie";
 
 export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [accessToken, setAccessToken] = useLocalStorage(
-    LocalStorageKey.ACCESS_TOKEN,
+  const [accessToken, setAccessToken] = useLocalStorage<string>(
+    LOCAL_STORAGE_KEYS.ACCESS_TOKEN,
     "",
   );
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ export const useAuth = () => {
 
   const login = async (loginData: RequestLoginDto) => {
     const response = await postSignin(loginData);
-    const { accessToken: newAccessToken, refreshToken } = response.data;
+    const { accessToken: newAccessToken, refreshToken } = response;
 
     // Access Token은 localStorage에 저장
     setAccessToken(newAccessToken);
@@ -59,7 +59,7 @@ export const useAuth = () => {
   const loginWithGoogle = async (googleAccessToken: string) => {
     try {
       const response = await postGoogleLogin(googleAccessToken);
-      const { accessToken: newAccessToken, refreshToken } = response.data;
+      const { accessToken: newAccessToken, refreshToken } = response;
 
       // Access Token은 localStorage에 저장
       setAccessToken(newAccessToken);

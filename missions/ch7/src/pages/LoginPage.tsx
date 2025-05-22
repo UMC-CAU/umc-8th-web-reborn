@@ -73,7 +73,11 @@ const Login = () => {
         email: values.email,
         password: values.password,
       });
+      
+      // login 함수 호출
       login(data);
+      
+      // 로그인 성공 시 홈으로 이동
       navigate("/", { replace: true });
     } catch (err) {
       console.error("Login failed:", err);

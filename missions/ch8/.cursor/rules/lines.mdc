@@ -1,0 +1,205 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+// MDC(Material Design Components) 코드 작성 규칙
+// 버전: 1.0.0
+// 최종 수정일: 2023-10-01
+
+/**
+ * 모든 MDC 컴포넌트 코드 작성 시 주석 규칙
+ * 
+ * 이 문서는 Material Design Components 구현 시 
+ * 일관된 주석 작성을 위한 규칙을 정의합니다.
+ */
+
+// 1. 컴포넌트 최상단 주석
+/**
+ * @component ComponentName
+ * @description 컴포넌트에 대한 간략한 설명
+ * @example
+ * // 기본 사용법
+ * <ComponentName prop1="value1" prop2="value2" />
+ * 
+ * // 다양한 설정
+ * <ComponentName
+ *   prop1="value1"
+ *   prop2="value2"
+ *   variant="outlined"
+ * />
+ */
+
+// 2. 인터페이스/타입 주석
+/**
+ * ComponentName 컴포넌트 Props
+ * @interface ComponentNameProps
+ */
+interface ComponentNameProps {
+  /** 첫 번째 속성에 대한 설명 */
+  prop1: string;
+  
+  /** 
+   * 두 번째 속성에 대한 설명
+   * @default 'default value'
+   */
+  prop2?: string;
+  
+  /**
+   * 컴포넌트의 변형을 지정
+   * @default 'text'
+   */
+  variant?: 'text' | 'contained' | 'outlined';
+}
+
+// 3. 함수 및 메서드 주석
+/**
+ * 특정 기능을 수행하는 헬퍼 함수
+ * @param {string} param1 - 첫 번째 매개변수 설명
+ * @param {number} param2 - 두 번째 매개변수 설명
+ * @returns {boolean} 반환값에 대한 설명
+ */
+function helperFunction(param1: string, param2: number): boolean {
+  // 함수 구현...
+  return true;
+}
+
+// 4. 조건부 렌더링 코드 블록 주석
+// 컴포넌트 내부 코드
+const ComponentName: React.FC<ComponentNameProps> = ({ prop1, prop2 = 'default', variant = 'text' }) => {
+  // 상태 관리 코드
+  const [state, setState] = useState(false);
+  
+  // 이벤트 핸들러
+  const handleClick = () => {
+    setState(!state);
+  };
+  
+  // 조건부 렌더링을 위한 변수
+  let conditionalContent;
+  
+  // variant에 따른 조건부 렌더링
+  if (variant === 'contained') {
+    conditionalContent = <div>Contained Variant</div>;
+  } else if (variant === 'outlined') {
+    conditionalContent = <div>Outlined Variant</div>;
+  } else {
+    conditionalContent = <div>Text Variant</div>;
+  }
+  
+  // 렌더링 반환
+  return (
+    <div className="component-name">
+      {/* prop1 표시 영역 */}
+      <h1>{prop1}</h1>
+      
+      {/* prop2 표시 영역 */}
+      <p>{prop2}</p>
+      
+      {/* 조건부 콘텐츠 렌더링 */}
+      {conditionalContent}
+      
+      {/* 상태에 따른 조건부 렌더링 */}
+      {state && <div>State is true</div>}
+      
+      {/* 이벤트 핸들러 연결 */}
+      <button onClick={handleClick}>Toggle State</button>
+    </div>
+  );
+};
+
+// 5. 스타일 관련 주석
+/**
+ * 컴포넌트 스타일 정의
+ * @styles
+ */
+const styles = {
+  /** 루트 요소 스타일 */
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '16px',
+  },
+  
+  /** 제목 스타일 */
+  title: {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    marginBottom: '8px',
+  },
+  
+  /** 내용 스타일 */
+  content: {
+    fontSize: '14px',
+    color: '#666',
+  },
+};
+
+// 6. 유틸리티 함수 주석
+/**
+ * 특정 계산을 수행하는 유틸리티 함수
+ * @param {number[]} values - 계산할 값들의 배열
+ * @returns {number} 계산 결과
+ */
+function calculateSomething(values: number[]): number {
+  // 함수 구현...
+  return values.reduce((sum, value) => sum + value, 0);
+}
+
+// 7. 익스포트 전 최종 주석
+/**
+ * 최종 익스포트되는 컴포넌트
+ * @exports ComponentName
+ */
+export default ComponentName;
+
+// 8. 테스트 주석 예시 (테스트 파일용)
+/**
+ * @test ComponentName
+ * 
+ * 테스트 케이스:
+ * 1. 기본 렌더링 테스트
+ * 2. prop1 변경 시 동작 테스트
+ * 3. variant 변경 시 스타일 테스트
+ * 4. 이벤트 핸들러 테스트
+ */
+
+// 9. 애니메이션 관련 주석
+/**
+ * 애니메이션 정의
+ * @animation fadeIn
+ * @duration 300ms
+ */
+const animations = {
+  fadeIn: {
+    from: { opacity: 0 },
+    to: { opacity: 1 },
+  },
+  slideIn: {
+    from: { transform: 'translateY(-20px)' },
+    to: { transform: 'translateY(0)' },
+  },
+};
+
+// 10. 접근성 관련 주석
+/**
+ * 접근성(a11y) 속성 정의
+ * @a11y
+ * 
+ * - aria-label 사용
+ * - 키보드 탐색 지원
+ * - 충분한 색상 대비
+ */
+const a11yProps = {
+  'aria-label': 'Component description',
+  tabIndex: 0,
+  role: 'button',
+};
+
+// 끝부분 관리자 정보
+/**
+ * @author 개발자 이름
+ * @version 1.0.0
+ * @since 2023-10-01
+ */
+

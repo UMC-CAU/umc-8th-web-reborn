@@ -39,9 +39,10 @@ const SignupPage = () => {
     })
 
     const onSubmit : SubmitHandler<formFields> = async(data) => {
-        const {passwordCheck, ...rest} = data
+        // name도 함께 전송
+        const { email, password, name } = data;
 
-        const response = await postSignup(rest)
+        const response = await postSignup({ email, password, name })
         console.log(response)
     }
     return (

@@ -43,6 +43,7 @@ export interface UserDto {
   email: string;
   name?: string;
   profileImage?: string;
+  createdAt?: string;
 }
 
 // API 응답 타입

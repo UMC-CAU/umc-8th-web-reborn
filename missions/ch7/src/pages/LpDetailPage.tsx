@@ -3,24 +3,22 @@ import useGetLpDetail from "../hooks/queries/useGetLpDetail";
 import useGetMyInfo from "../hooks/queries/useGetMyInfo.ts";
 import { useAuth } from "../context/AuthContext";
 import usePostLike from "../hooks/mutations/usePostLike";
-import useDeleteLike from "../hooks/mutations/useDeleteLike";
 import Heart from "../components/Heart";
 
 const LpDetailPage = () => {
   const params = useParams();
-  const lpId = Number(params.id);
+  const lpId = Number(params.lpId);
   const {accessToken} = useAuth();
   const { data: lp, isPending, isError } = useGetLpDetail(lpId);
-  const{data:me} = useGetMyInfo(accessToken);
+  const { data: me } = useGetMyInfo(accessToken);
   // mutate -> 비동기 요청을 실행하고, 콜백 함수를 이용해서 후속 작업 처리함.
   // mutateAsync -> Promise를 반환하고, await 사용 가능
-  const{mutate:likeMutate}=usePostLike();
-  const{mutate:disLikeMutate}=useDeleteLike();
+  const { mutate: likeMutate } = usePostLike();
 
-  const isLiked = lp?.data.likes.map((like)=> like.userId).includes(me?.data.id as number);
+  const isLiked = lp?.data.likes.map((like)=> like.userId).includes(typeof me?.id === 'number' ? me.id : -1);
 
   const handleLikeLp = () => {
-    if(!isLiked && me?.data.id) {
+    if(!isLiked && me?.id) {
       likeMutate({ lpId });
     }
   }

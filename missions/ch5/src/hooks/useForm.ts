@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 interface UseFormProps<T> {
   initialValue: T;
@@ -17,7 +17,7 @@ function useForm<T>({ initialValue, validate }: UseFormProps<T>) {
   useEffect(() => {
     const validationErrors = validate(values);
     setErrors(validationErrors);
-  }, [values]);
+  }, [values, validate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "../components/GoogleLogin";
 import { useAuth } from "../context/AuthContext";
@@ -7,7 +7,7 @@ import useForm from "../hooks/useForm";
 import { SigninFormData, signinSchema } from "../types/auth";
 import { z } from "zod";
 
-const Login = () => {
+const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -234,4 +234,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;

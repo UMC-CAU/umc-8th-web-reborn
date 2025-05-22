@@ -12,10 +12,10 @@ import { CreateLpDto, Lp } from "../types/lp"
 const HomePage = () => {
     const [search, setSearch] = useState("")
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const { data, isFetching, isError, isPending, hasNextPage, fetchNextPage } = useGetInfiniteLpList({ limit: 10, search, order: PAGINATION_ORDER.asc })
+    const { data, isFetching, isPending, hasNextPage, fetchNextPage } = useGetInfiniteLpList({ limit: 10, search, order: PAGINATION_ORDER.asc })
     //const {data,isLoading,isPending,isError}= useGetLpList({search,limit:50})
     const lps = data
-    const { mutate: createLp, isPending: isCreating } = usePostLp()
+    const { mutate: createLp } = usePostLp()
 
     const { ref, inView } = useInView()
 
