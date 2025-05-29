@@ -3,13 +3,13 @@ import cartReducer from "../slices/cartSlice";
 
 // 1. 저장소 생성성
 function createStore() {
-    const store = configureStore({
-        // 2. 리듀서 설정
-        reducer: {
-            cart: cartReducer,
-        },
-    });
-    return store;
+  const store = configureStore({
+    // 2. 리듀서 설정
+    reducer: {
+      cart: cartReducer,
+    },
+  });
+  return store;
 }
 
 // store를 활용할 수 있도록 내보내야 함.
