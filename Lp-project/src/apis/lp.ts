@@ -1,15 +1,15 @@
 import { axiosInstance } from "./axios";
-import { PaginationDto } from "../types/common";
+import { type PaginationDto } from "../types/common";
 import {
-  RequestLpDetailDto,
-  ResponseLpDetailDto,
-  ResponseLpListDto,
-  ResponsetLikeLpDto,
-  CreateLpDto,
+  type RequestLpDetailDto,
+  type ResponseLpDetailDto,
+  type ResponseLpListDto,
+  type ResponsetLikeLpDto,
+  type CreateLpDto,
 } from "../types/lp";
 
 export const getLpList = async (
-  paginationDto: PaginationDto
+  paginationDto: PaginationDto,
 ): Promise<ResponseLpListDto> => {
   try {
     const { cursor, limit, order, search } = paginationDto;
@@ -29,7 +29,7 @@ export const getLpList = async (
 };
 
 export const getLpDetail = async (
-  lpId: number
+  lpId: number,
 ): Promise<ResponseLpDetailDto> => {
   try {
     const response = await axiosInstance.get(`/v1/lps/${lpId}`);
@@ -55,7 +55,7 @@ export const deleteLike = async ({
 };
 
 export const createLp = async (
-  lpData: CreateLpDto
+  lpData: CreateLpDto,
 ): Promise<ResponseLpDetailDto> => {
   try {
     // FormData 생성

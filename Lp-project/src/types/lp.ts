@@ -1,4 +1,4 @@
-import { CommonResponse, CursorBasedResponse } from "./common";
+import { type CommonResponse, type CursorBasedResponse } from "./common";
 
 export type Tag = {
   id: number;
