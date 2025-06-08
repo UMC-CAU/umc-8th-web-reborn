@@ -7,7 +7,6 @@ import type {
   MovieResponse,
   Movie,
   GenreResponse,
-  Genre,
 } from "../types/movie";
 
 export default function HomePage() {
@@ -90,7 +89,8 @@ export default function HomePage() {
         <div className="flex justify-center mt-4">
           <button
             onClick={handleLoadMore}
-            className="bg-violet-600 hover:bg-violet-700 text-white font-bold py-2 px-4 rounded">
+            className="bg-violet-600 hover:bg-violet-700 text-white font-bold py-2 px-4 rounded"
+          >
             더보기
           </button>
         </div>
